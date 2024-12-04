@@ -2,7 +2,15 @@
 
 This MCP Server is used to summarize your chat messages.
 
+[中文说明](README_CN.md)
+
 ![preview](./preview.png)
+
+> **Before you start**
+>
+> move to [chatbot](./chatbot) directory, follow the [README](./chatbot/README.md) to setup the chat database.
+>
+> start chatbot to save your chat messages.
 
 ## Features
 
@@ -18,7 +26,15 @@ This MCP Server is used to summarize your chat messages.
 
 ## Development
 
-Install dependencies:
+1. Set up environment variables:
+
+create `.env` file in the root directory, and set your chat database path.
+
+```txt
+CHAT_DB_PATH=path-to/chatbot/data/chat.db
+```
+
+2. Install dependencies:
 
 ```bash
 pnpm install
@@ -50,7 +66,7 @@ On Windows: `%APPDATA%/Claude/claude_desktop_config.json`
       "command": "path-to/bin/node",
       "args": ["path-to/mcp-server-chatsum/build/index.js"],
       "env": {
-        "CHAT_DB_PATH": "path-to/mcp-server-chatsum/data/chat.db"
+        "CHAT_DB_PATH": "path-to/mcp-server-chatsum/chatbot/data/chat.db"
       }
     }
   }

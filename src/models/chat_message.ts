@@ -1,71 +1,6 @@
 import { ChatMessage } from "../types/chat_message.js";
 import { getDb } from "./db.js";
 
-export async function saveChatMessage(msg: ChatMessage) {
-  try {
-    const db = getDb();
-    if (!db) {
-      throw new Error("db is not connected");
-    }
-
-    const {
-      msg_type,
-      msg_id,
-      created_at,
-      room_id,
-      room_name,
-      room_avatar,
-      talker_id,
-      talker_name,
-      talker_avatar,
-      content,
-      url_title,
-      url_desc,
-      url_link,
-      url_thumb,
-    } = msg;
-
-    let sql = `INSERT INTO chat_message(
-      created_at,
-      msg_id,
-      room_id,
-      room_name,
-      room_avatar,
-      talker_id,
-      talker_name,
-      talker_avatar,
-      content,
-      msg_type,
-      url_title,
-      url_desc,
-      url_link,
-      url_thumb
-    ) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)`;
-
-    db.run(sql, [
-      created_at,
-      msg_id,
-      room_id,
-      room_name,
-      room_avatar,
-      talker_id,
-      talker_name,
-      talker_avatar,
-      content,
-      msg_type,
-      url_title,
-      url_desc,
-      url_link,
-      url_thumb,
-    ]);
-
-    console.error("save message ok");
-  } catch (error) {
-    console.error("save message failed: ", error);
-    throw error;
-  }
-}
-
 export async function queryChatMessages({
   room_names,
   talker_names,
@@ -85,7 +20,7 @@ export async function queryChatMessages({
 
     const offset = (page - 1) * limit;
 
-    let sql = `SELECT * FROM chat_message`;
+    let sql = `SELECT * FROM chat_messages`;
     let values: any[] = [];
 
     if (room_names && room_names.length > 0) {
