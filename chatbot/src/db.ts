@@ -1,10 +1,12 @@
 import { ChatMessage } from "./types";
-import sqlite3 from "sqlite3";
+import Database from "better-sqlite3";
+
+let db: Database.Database | null = null;
 
 export async function saveChatMessage(msg: ChatMessage) {
   try {
-    const db = getDb();
-    if (!db) {
+    const database = getDb();
+    if (!database) {
       throw new Error("db is not connected");
     }
 
@@ -25,7 +27,7 @@ export async function saveChatMessage(msg: ChatMessage) {
       url_thumb,
     } = msg;
 
-    let sql = `INSERT INTO chat_messages(
+    const sql = `INSERT INTO chat_messages(
       created_at,
       msg_id,
       room_id,
@@ -42,7 +44,7 @@ export async function saveChatMessage(msg: ChatMessage) {
       url_thumb
     ) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)`;
 
-    db.run(sql, [
+    database.prepare(sql).run(
       created_at,
       msg_id,
       room_id,
@@ -56,28 +58,29 @@ export async function saveChatMessage(msg: ChatMessage) {
       url_title,
       url_desc,
       url_link,
-      url_thumb,
-    ]);
+      url_thumb
+    );
 
-    console.error("save message ok");
+    console.log("save message ok");
   } catch (error) {
     console.error("save message failed: ", error);
     throw error;
   }
 }
 
-export function getDb(): sqlite3.Database {
+export function getDb(): Database.Database {
+  if (db) return db;
+  
   const dbName = process.env.CHAT_DB_PATH || "";
   if (!dbName) {
     throw new Error("CHAT_DB_PATH is not set");
   }
 
-  const db = new sqlite3.Database(dbName, (err) => {
-    if (err) {
-      console.error("chat db connect failed: ", dbName, err.message);
-      return;
-    }
-  });
-
-  return db;
+  try {
+    db = new Database(dbName, { verbose: console.log });
+    return db;
+  } catch (err) {
+    console.error("chat db connect failed: ", dbName, err);
+    throw err;
+  }
 }
